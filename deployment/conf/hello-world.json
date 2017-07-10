@@ -4,6 +4,10 @@
     "ParameterValue": "HelloWorld"
   },
   {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "prod"
+  },
+  {
     "ParameterKey": "BastionKeyName",
     "ParameterValue": "hello-world-app-bastion-key-pair"
   },

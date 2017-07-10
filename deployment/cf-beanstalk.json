@@ -15,6 +15,16 @@
       "ConstraintDescription" : "must be a valid string Alphanumeric + _ and -"
     },
 
+    "EnvironmentName" : {
+      "Description" : "Environment name",
+      "Type" : "String",
+      "MinLength": "3",
+      "MaxLength": "20",
+      "Default" : "prod",
+      "AllowedPattern" : "^[\\w-]*$",
+      "ConstraintDescription" : "must be a valid string Alphanumeric + _ and -"
+    },
+
     "BastionKeyName": {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the bastion host",
       "Type": "AWS::EC2::KeyPair::KeyName",
@@ -737,6 +747,8 @@
       "Type" : "AWS::ElasticBeanstalk::Environment",
       "Properties" : {
          "ApplicationName" : { "Ref" : "SampleApplication" },
+         "CNAMEPrefix" : { "Ref" : "ApplicationName" },
+         "EnvironmentName" : { "Ref" : "EnvironmentName" },
          "Description" :  "AWS Elastic Beanstalk Environment running Node.js Hello World Application",
          "TemplateName": { "Ref": "SampleConfigTemplate" },
          "VersionLabel" : { "Ref" : "SampleApplicationVersion" }
