@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    aws_region: eu-west-1
+    aws_key_pair_name: HelloWorld-eb-node-js
+
+  tasks:
+  - name: "testing aws credentials"
+    command: aws --version --region "{{aws_region}}"
+
+  - name: "create key pair for EC2 instances"
+    tags: keypair
+    ec2_key:
+      region: "{{ aws_region }}"
+      name: "{{ aws_key_pair_name }}"
+    register: mykeypair
+
+  - name: "write the private key to file"
+    copy: content="{{ mykeypair.key.private_key }}" dest="./{{ aws_key_pair_name }}.pem" mode=0600
+    when: mykeypair.changed
