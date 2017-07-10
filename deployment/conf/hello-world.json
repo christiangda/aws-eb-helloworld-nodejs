@@ -4,8 +4,12 @@
     "ParameterValue": "HelloWorld"
   },
   {
+    "ParameterKey": "RootDomainName",
+    "ParameterValue": "mydomain.com"
+  },
+  {
     "ParameterKey": "EnvironmentName",
-    "ParameterValue": "prod"
+    "ParameterValue": "production"
   },
   {
     "ParameterKey": "BastionKeyName",
@@ -66,44 +70,21 @@
   {
     "ParameterKey": "ELBCrossZone",
     "ParameterValue": "true"
-  }
-
-
-
-  {
-    "ParameterKey": "AppSource",
-    "ParameterValue": "http://s3-eu-west-1.amazonaws.com/elasticbeanstalk-samples-eu-west-1/nodejs-sample-v2.zip"
   },
   {
-    "ParameterKey": "ProxyServer",
-    "ParameterValue": "nginx"
+    "ParameterKey": "HealtReportingType",
+    "ParameterValue": "enhanced"
   },
   {
-    "ParameterKey": "NodeVersion",
-    "ParameterValue": "6.10.0"
+    "ParameterKey": "EnvironmentType",
+    "ParameterValue": "LoadBalanced"
   },
   {
-    "ParameterKey": "InstanceType",
-    "ParameterValue": "m1.micro"
+    "ParameterKey": "OperatorEMail",
+    "ParameterValue": "youremail@gmail.com"
   },
   {
-    "ParameterKey": "ServerPort",
-    "ParameterValue": "8080"
-  },
-  {
-    "ParameterKey": "NodeCommand",
-    "ParameterValue": "npm start"
-  },
-  {
-    "ParameterKey": "InstanceType",
-    "ParameterValue": "m1.micro"
-  },
-  {
-    "ParameterKey": "InstanceType",
-    "ParameterValue": "m1.micro"
-  },
-  {
-    "ParameterKey": "InstanceType",
-    "ParameterValue": "m1.micro"
+    "ParameterKey": "ServiceRole",
+    "ParameterValue": "aws-elasticbeanstalk-service-role"
   }
 ]

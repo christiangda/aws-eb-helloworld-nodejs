@@ -29,11 +29,6 @@ pip install --upgrade --user awsebcli
 
 ### Create key pairs for AWS Beanstalk EC2 instances
 
-Bastion
-```
-aws ec2 create-key-pair --key-name hello-world-app-bastion-key-pair --query 'KeyMaterial' --region eu-west-1 --output text > ~/.ssh/hello-world-app-bastion-key-pair.pem
-```
-
 EC2
 ```
 aws ec2 create-key-pair --key-name hello-world-app-ec2-key-pair --query 'KeyMaterial' --region eu-west-1 --output text > ~/.ssh/hello-world-app-ec2-key-pair.pem
@@ -71,4 +66,5 @@ eb use prod
 
 ## References
 * [Passing Parameters to CloudFormation Stacks with the AWS CLI and Powershell](https://aws.amazon.com/es/blogs/devops/passing-parameters-to-cloudformation-stacks-with-the-aws-cli-and-powershell/)
-* [Elastic Beanstalk Supported Platforms](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.nodejs)
+* [AWS Elastic Beanstalk --> Supported Platforms](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.nodejs)
+* [AWS Elastic Beanstalk --> General Options for All Environments](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkhealthreporting)
