@@ -1,7 +1,51 @@
 [
   {
-    "ParameterKey": "KeyPairName",
-    "ParameterValue": "MyKey"
+    "ParameterKey": "LogPublicationControl",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "InstancePort",
+    "ParameterValue": "80"
+  },
+  {
+    "ParameterKey": "XRayEnabled",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AWSEBEnvironmentName",
+    "ParameterValue": "prod"
+  },
+  {
+    "ParameterKey": "AppSource",
+    "ParameterValue": "http://s3-eu-west-1.amazonaws.com/elasticbeanstalk-samples-eu-west-1/nodejs-sample-v2.zip"
+  },
+  {
+    "ParameterKey": "ProxyServer",
+    "ParameterValue": "nginx"
+  },
+  {
+    "ParameterKey": "NodeVersion",
+    "ParameterValue": "6.10.0"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "m1.micro"
+  },
+  {
+    "ParameterKey": "ServerPort",
+    "ParameterValue": "8080"
+  },
+  {
+    "ParameterKey": "NodeCommand",
+    "ParameterValue": "npm start"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "m1.micro"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "m1.micro"
   },
   {
     "ParameterKey": "InstanceType",

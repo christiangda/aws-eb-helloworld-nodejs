@@ -6,18 +6,7 @@ Deploy a Node.js Application over AWS Beanstalk using Ansible tool.
 
 To run this code, you need an AWS Account and a user with AWS Access Key
 
-## Install requirements
-
-### Ansible
-
-Installing Ansible tool
-
-From fedora
-```
-sudo dnf install ansible -y
-
-pip install --upgrade --user boto
-```
+## Install Requirements
 
 ### AWS Command Line Interface (AWS CLI)
 
@@ -36,6 +25,26 @@ aws Configure
 Install the Elastic Beanstalk Command Line Interface (EB CLI)
 ```
 pip install --upgrade --user awsebcli
+```
+
+### Create key pairs for AWS Beanstalk EC2 instances
+
+Bastion
+```
+aws ec2 create-key-pair --key-name hello-world-app-bastion-key-pair --query 'KeyMaterial' --region eu-west-1 --output text > ~/.ssh/hello-world-app-bastion-key-pair.pem
+```
+
+EC2
+```
+aws ec2 create-key-pair --key-name hello-world-app-ec2-key-pair --query 'KeyMaterial' --region eu-west-1 --output text > ~/.ssh/hello-world-app-ec2-key-pair.pem
+```
+
+## Create initial stack
+
+```
+aws cloudformation create-stack --stackname startmyinstance  
+    --template-body file:///some/local/path/templates/startmyinstance.json
+    --parameters file:///some/local/path/params/startmyinstance-parameters.json
 ```
 
 ## Prepare application
@@ -59,3 +68,7 @@ eb init --region eu-west-1 --platform Python HelloWorld
 
 eb use prod
 ```
+
+## References
+* [Passing Parameters to CloudFormation Stacks with the AWS CLI and Powershell](https://aws.amazon.com/es/blogs/devops/passing-parameters-to-cloudformation-stacks-with-the-aws-cli-and-powershell/)
+* [Elastic Beanstalk Supported Platforms](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.nodejs)

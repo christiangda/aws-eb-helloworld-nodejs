@@ -5,15 +5,27 @@
 
   "Parameters" : {
 
+    "ApplicationName" : {
+      "Description" : "Application name",
+      "Type" : "String",
+      "MinLength": "4",
+      "MaxLength": "100",
+      "Default" : "HelloWorld",
+      "AllowedPattern" : "^[\\w-]*$",
+      "ConstraintDescription" : "must be a valid string Alphanumeric + _ and -"
+    },
+
     "BastionKeyName": {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the bastion host",
       "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default" : "hello-world-app-bastion-key-pair",
       "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
     },
 
     "KeyName": {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the Elastic Beanstalk hosts",
       "Type": "AWS::EC2::KeyPair::KeyName",
+      "Default" : "hello-world-app-ec2-key-pair",
       "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
     },
 
@@ -41,6 +53,102 @@
       "Default" : "t2.small",
       "AllowedValues" : [ "t1.micro", "t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "m1.small", "m1.medium", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge", "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge", "c1.medium", "c1.xlarge", "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge", "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge", "g2.2xlarge", "g2.8xlarge", "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge", "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge", "d2.xlarge", "d2.2xlarge", "d2.4xlarge", "d2.8xlarge", "hi1.4xlarge", "hs1.8xlarge", "cr1.8xlarge", "cc2.8xlarge", "cg1.4xlarge"],
       "ConstraintDescription" : "must be a valid EC2 instance type."
+    },
+
+    "AutoScalingGroupMinSize" : {
+      "Description" : "Minimum number of instances you want in your Auto Scaling group.",
+      "Type" : "Number",
+      "Default" : "1",
+      "ConstraintDescription" : "must be a valid integer value."
+    },
+
+    "AutoScalingGroupMaxSize" : {
+      "Description" : "Maximum number of instances you want in your Auto Scaling group.",
+      "Type" : "Number",
+      "Default" : "6",
+      "ConstraintDescription" : "must be a valid integer value."
+    },
+
+    "RollingUpdateEnabled": {
+      "Type": "String",
+      "Description": "If true, enables rolling updates for an environment. Rolling updates are useful when you need to make small, frequent updates to your Elastic Beanstalk software application and you want to avoid application downtime.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true"
+    },
+
+    "RollingUpdateType": {
+      "Type": "String",
+      "Description": "Time-based rolling updates apply a PauseTime between batches. Health-based rolling updates wait for new instances to pass health checks before moving on to the next batch. Immutable updates launch a full set of instances in a new AutoScaling group.",
+      "AllowedValues": [
+        "Time",
+        "Health",
+        "Immutable"
+      ],
+      "Default": "Immutable"
+    },
+
+    "StreamLogs": {
+      "Type": "String",
+      "Description": "Whether to create groups in CloudWatch logs for proxy and deployment logs, and stream logs from each instance in your environment.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true"
+    },
+
+    "StreamLogsDeleteOnTerminate": {
+      "Type": "String",
+      "Description": "Whether to delete the log groups when the environment is terminated. If false, the logs are kept RetentionDays days.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true"
+    },
+
+    "StreamLogsRetentionInDays" : {
+      "Description" : "The number of days to keep log events before they expire.",
+      "Type" : "Number",
+      "Default" : "7",
+      "AllowedValues": [
+        "1", "3", "5", "7", "14", "30", "60", "90", "120", "150", "180", "365", "400", "545", "731", "1827", "3653"
+      ]
+    },
+
+    "DeploymentPolicy": {
+      "Type": "String",
+      "Description": "Choose a deployment policy for application version deployments.",
+      "AllowedValues": [
+        "AllAtOnce",
+        "Rolling",
+        "RollingWithAdditionalBatch",
+        "Immutable"
+      ],
+      "Default": "Immutable"
+    },
+
+    "LogPublicationControl": {
+      "Type": "String",
+      "Description": "Copy the log files for your application's Amazon EC2 instances to the Amazon S3 bucket associated with your application.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true"
+    },
+
+    "ELBCrossZone": {
+      "Type": "String",
+      "Description": "Configure the load balancer to route traffic evenly across all instances in all Availability Zones rather than only within each zone.",
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Default": "true"
     }
   },
 
@@ -572,38 +680,66 @@
     "SampleApplication" : {
       "Type" : "AWS::ElasticBeanstalk::Application",
       "Properties" : {
-        "Description" : "AWS Elastic Beanstalk Python Sample Application"
+        "ApplicationName" : { "Ref" : "ApplicationName" },
+        "Description" : "AWS Elastic Beanstalk Node.js Hello World Application"
       }
     },
 
     "SampleApplicationVersion" : {
       "Type" : "AWS::ElasticBeanstalk::ApplicationVersion",
       "Properties" : {
-        "Description" : "Version 1.0",
+        "Description" : "1.0.0",
         "ApplicationName" : { "Ref" : "SampleApplication" },
         "SourceBundle" : {
           "S3Bucket" : { "Fn::Join" : ["-", ["elasticbeanstalk-samples", { "Ref" : "AWS::Region" }]]},
-          "S3Key" : "python-sample.zip"
+          "S3Key" : "nodejs-sample-v2.zip"
         }
+      }
+    },
+
+    "SampleConfigTemplate" : {
+      "Type" : "AWS::ElasticBeanstalk::ConfigurationTemplate",
+      "Properties" : {
+        "ApplicationName" : { "Ref" : "SampleApplication" },
+        "Description" :  "AWS Elastic Beanstalk Environment running Node.js Hello World Application",
+        "EnvironmentId" : "",
+        "SolutionStackName" : "64bit Amazon Linux 2017.03 v4.1.1 running Node.js",
+        "OptionSettings" : [
+          {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "CrossZone", "Value": { "Ref": "ELBCrossZone" }},
+
+          {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "SSHSourceRestriction", "Value" : { "Fn::Join" : [ "", ["tcp,22,22,", { "Ref" : "BastionSecurityGroup" }]]}},
+          {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "SecurityGroups", "Value" : { "Ref" : "BeanstalkSecurityGroup" }},
+          {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "EC2KeyName", "Value" : { "Ref" : "KeyName" }},
+          {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName": "IamInstanceProfile", "Value": { "Ref": "WebServerInstanceProfile" }},
+
+          {"Namespace" : "aws:autoscaling:asg", "OptionName": "MinSize", "Value": { "Ref": "AutoScalingGroupMinSize" }},
+          {"Namespace" : "aws:autoscaling:asg", "OptionName": "MaxSize", "Value": { "Ref": "AutoScalingGroupMaxSize" }},
+
+          {"Namespace" : "aws:autoscaling:updatepolicy:rollingupdate", "OptionName": "RollingUpdateEnabled", "Value": { "Ref": "RollingUpdateEnabled" }},
+          {"Namespace" : "aws:autoscaling:updatepolicy:rollingupdate", "OptionName": "RollingUpdateType", "Value": { "Ref": "RollingUpdateType" }},
+
+          {"Namespace" : "aws:elasticbeanstalk:command", "OptionName": "DeploymentPolicy", "Value": { "Ref": "DeploymentPolicy" }},
+
+          {"Namespace" : "aws:elasticbeanstalk:cloudwatch:logs", "OptionName": "StreamLogs", "Value": { "Ref": "StreamLogs" }},
+          {"Namespace" : "aws:elasticbeanstalk:cloudwatch:logs", "OptionName": "DeleteOnTerminate", "Value": { "Ref": "StreamLogsDeleteOnTerminate" }},
+          {"Namespace" : "aws:elasticbeanstalk:cloudwatch:logs", "OptionName": "RetentionInDays", "Value": { "Ref": "StreamLogsRetentionInDays" }},
+
+          {"Namespace" : "aws:elasticbeanstalk:hostmanager", "OptionName": "LogPublicationControl", "Value": { "Ref": "LogPublicationControl" }},
+
+          {"Namespace" : "aws:ec2:vpc", "OptionName" : "VPCId", "Value" : { "Ref" : "VPC" }},
+          {"Namespace" : "aws:ec2:vpc", "OptionName" : "Subnets", "Value" : { "Ref" : "PrivateSubnet" }},
+          {"Namespace" : "aws:ec2:vpc", "OptionName" : "ELBSubnets", "Value" : { "Ref" : "PublicSubnet" }}
+       ]
       }
     },
 
     "SampleEnvironment" : {
       "Type" : "AWS::ElasticBeanstalk::Environment",
       "Properties" : {
-        "ApplicationName" : { "Ref" : "SampleApplication" },
-         "Description" :  "AWS Elastic Beanstalk Environment running Python Sample Application",
-         "SolutionStackName" : "64bit Amazon Linux 2015.03 v2.0.1 running Python 2.7",
-         "VersionLabel" : { "Ref" : "SampleApplicationVersion" },
-         "OptionSettings" : [
-           {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "SSHSourceRestriction", "Value" : { "Fn::Join" : [ "", ["tcp,22,22,", { "Ref" : "BastionSecurityGroup" }]]}},
-           {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "SecurityGroups", "Value" : { "Ref" : "BeanstalkSecurityGroup" }},
-           {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "EC2KeyName", "Value" : { "Ref" : "KeyName" }},
-           {"Namespace" : "aws:ec2:vpc", "OptionName" : "VPCId", "Value" : { "Ref" : "VPC" }},
-           {"Namespace" : "aws:ec2:vpc", "OptionName" : "Subnets", "Value" : { "Ref" : "PrivateSubnet" }},
-           {"Namespace" : "aws:ec2:vpc", "OptionName" : "ELBSubnets", "Value" : { "Ref" : "PublicSubnet" }},
-           {"Namespace": "aws:autoscaling:launchconfiguration", "OptionName": "IamInstanceProfile", "Value": { "Ref": "WebServerInstanceProfile" }}
-        ]
+         "ApplicationName" : { "Ref" : "SampleApplication" },
+         "Description" :  "AWS Elastic Beanstalk Environment running Node.js Hello World Application",
+         "TemplateName": { "Ref": "SampleConfigTemplate" },
+         "VersionLabel" : { "Ref" : "SampleApplicationVersion" }
       }
     }
   },
