@@ -1,4 +1,4 @@
-# DevOps -- Node.js Application over AWS Elastic Beanstalk (aws-eb-helloworld-nodejs)
+# Hello World Application using Node.js over AWS Elastic Beanstalk
 
 Deploy a Node.js Application over AWS Beanstalk using Ansible tool.
 
