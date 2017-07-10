@@ -64,6 +64,11 @@ eb init --region eu-west-1 --platform Python HelloWorld
 eb use prod
 ```
 
+## Stuff created by this project
+* [AWS R53 Public Hosted Zones](http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html)
+* [AWS Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/)
+* []()
+
 ## References
 * [Passing Parameters to CloudFormation Stacks with the AWS CLI and Powershell](https://aws.amazon.com/es/blogs/devops/passing-parameters-to-cloudformation-stacks-with-the-aws-cli-and-powershell/)
 * [AWS Elastic Beanstalk --> Supported Platforms](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/concepts.platforms.html#concepts.platforms.nodejs)

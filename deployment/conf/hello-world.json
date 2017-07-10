@@ -82,9 +82,5 @@
   {
     "ParameterKey": "OperatorEMail",
     "ParameterValue": "youremail@gmail.com"
-  },
-  {
-    "ParameterKey": "ServiceRole",
-    "ParameterValue": "aws-elasticbeanstalk-service-role"
   }
 ]

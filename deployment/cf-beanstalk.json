@@ -172,16 +172,7 @@
       "Default": "mydomain.com",
       "AllowedPattern": "(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]",
       "ConstraintDescription": "must be a valid domain name."
-    },
-
-    "ServiceRole": {
-      "Description": "Elastic Beanstalk Service Roles",
-      "Type": "String",
-      "Default": "aws-elasticbeanstalk-service-role",
-      "AllowedPattern" : "^[\\w-]*$",
-      "ConstraintDescription" : "must be a valid string Alphanumeric + _ and -"
     }
-
   },
 
   "Mappings" : {
@@ -365,7 +356,25 @@
       }
     },
 
-    "EBServerRole": {
+    "ServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": [{ "Fn::FindInMap" : ["Region2Principal", {"Ref" : "AWS::Region"}, "EC2Principal"]}] },
+            "Action": [ "sts:AssumeRole" ]
+          } ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
+          "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService"
+        ]
+      }
+    },
+
+    "InstancesRole": {
       "Type": "AWS::IAM::Role",
       "Properties" : {
         "AssumeRolePolicyDocument" : {
@@ -379,10 +388,10 @@
       }
     },
 
-    "EBServerRolePolicy": {
+    "InstancesRolePolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName" : "EBServerRole",
+        "PolicyName" : "InstancesRole",
         "PolicyDocument" : {
           "Statement"  : [ {
             "Effect"    : "Allow",
@@ -390,7 +399,7 @@
             "Resource"  : "*"
           } ]
         },
-        "Roles": [ { "Ref": "EBServerRole" } ]
+        "Roles": [ { "Ref": "InstancesRole" } ]
       }
     },
 
@@ -398,7 +407,7 @@
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Path": "/",
-        "Roles": [ { "Ref": "EBServerRole" } ]
+        "Roles": [ { "Ref": "InstancesRole" } ]
       }
     },
 
@@ -467,7 +476,9 @@
          "TemplateName": { "Ref": "SampleConfigTemplate" },
          "VersionLabel" : { "Ref" : "SampleApplicationVersion" }
       }
-    }
+    },
+
+
   },
 
   "Outputs" : {
