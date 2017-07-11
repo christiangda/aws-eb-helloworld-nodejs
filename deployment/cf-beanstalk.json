@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "AWS CloudFormation Sample Template ElasticBeanstalk_in_VPC:",
+  "Description" : "AWS CloudFormation Template ElasticBeanstalk in default VPC: Stack: 64bit Amazon Linux 2017.03 v4.1.1 running Node.js",
 
   "Parameters" : {
 
@@ -430,6 +430,29 @@
       }
     },
 
+    "BalancerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SecurityGroup for ElasticBeanstalk Balancer",
+        "SecurityGroupIngress": [
+          { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0" }
+        ]
+      }
+    },
+
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SecurityGroup for ElasticBeanstalk EC2 Instances",
+        "SecurityGroupIngress": [
+          { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "SourceSecurityGroupName" : { "Ref" : "BalancerSecurityGroup" }},
+          { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : { "Ref" : "SSHLocation" }},
+          { "IpProtocol" : "tcp", "FromPort" : "3389",  "ToPort" : "3389",  "CidrIp" : { "Ref" : "SSHLocation" }},
+          { "IpProtocol" : "tcp", "FromPort" : "8080",  "ToPort" : "8080",  "CidrIp" : { "Ref" : "SSHLocation" }}
+        ]
+      }
+    },
+
     "SampleApplication" : {
       "Type" : "AWS::ElasticBeanstalk::Application",
       "Properties" : {
@@ -459,6 +482,7 @@
         "SolutionStackName" : "64bit Amazon Linux 2017.03 v4.1.1 running Node.js",
         "OptionSettings" : [
           {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "CrossZone", "Value": { "Ref": "ELBCrossZone" }},
+          {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "SecurityGroups", "Value" : { "Fn::GetAtt" : ["BalancerSecurityGroup", "GroupId"] }},
 
           {"Namespace" : "aws:elasticbeanstalk:environment", "OptionName": "EnvironmentType", "Value": { "Ref": "EnvironmentType" }},
           {"Namespace" : "aws:elasticbeanstalk:environment", "OptionName": "ServiceRole", "Value": { "Ref": "ServiceRole" }},
@@ -469,6 +493,7 @@
 
           {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "EC2KeyName", "Value" : { "Ref" : "KeyName" }},
           {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName": "IamInstanceProfile", "Value": { "Ref": "EBServerInstanceProfile" }},
+          {"Namespace" : "aws:autoscaling:launchconfiguration", "OptionName" : "SecurityGroups", "Value" : { "Ref": "InstanceSecurityGroup" }},
 
           {"Namespace" : "aws:elasticbeanstalk:healthreporting:system", "OptionName": "SystemType", "Value": { "Ref": "HealtReportingType" }},
 
