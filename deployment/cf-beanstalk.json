@@ -493,7 +493,7 @@
       "Type" : "AWS::ElasticBeanstalk::Environment",
       "Properties" : {
          "ApplicationName" : { "Ref" : "SampleApplication" },
-         "CNAMEPrefix" : { "Fn::Join" : ["-", [{ "Ref" : "ApplicationName" }, { "Ref" : "EnvironmentName" }]]},
+         "CNAMEPrefix" : { "Fn::Join" : ["-", [{ "Ref" : "ApplicationName" }, { "Ref" : "EnvironmentName" }, { "Ref" : "HostedZone"} ]]},
          "EnvironmentName" : { "Ref" : "EnvironmentName" },
          "Description" :  "AWS Elastic Beanstalk Environment running Node.js Hello World Application",
          "TemplateName": { "Ref": "SampleConfigTemplate" },
