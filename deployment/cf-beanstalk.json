@@ -356,6 +356,13 @@
       }
     },
 
+    "NotificationTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Subscription": [{ "Endpoint": { "Ref": "OperatorEMail" }, "Protocol": "email" }]
+      }
+    },
+
     "ServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -363,7 +370,8 @@
           "Version" : "2012-10-17",
           "Statement": [{
             "Effect": "Allow",
-            "Principal": { "Service": [{ "Fn::FindInMap" : ["Region2Principal", {"Ref" : "AWS::Region"}, "EC2Principal"]}] },
+            "Principal": { "Service": "elasticbeanstalk.amazonaws.com" },
+            "Condition": { "StringEquals": { "sts:ExternalId": "elasticbeanstalk" } },
             "Action": [ "sts:AssumeRole" ]
           } ]
         },
