@@ -346,6 +346,15 @@
 
   "Resources" : {
 
+    "AppArtifactBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "AppArtifactBucket"
+        }
+      }
+    },
+
     "HostedZone": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
