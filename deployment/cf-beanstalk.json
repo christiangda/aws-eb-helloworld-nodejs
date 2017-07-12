@@ -435,7 +435,8 @@
       "Properties": {
         "GroupDescription": "SecurityGroup for ElasticBeanstalk Balancer",
         "SecurityGroupIngress": [
-          { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0" }
+          { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0" },
+          { "IpProtocol" : "tcp", "FromPort" : "8080",  "ToPort" : "8080",  "CidrIp" : { "Ref" : "SSHLocation" } }
         ]
       }
     },
@@ -446,9 +447,9 @@
         "GroupDescription": "SecurityGroup for ElasticBeanstalk EC2 Instances",
         "SecurityGroupIngress": [
           { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "SourceSecurityGroupName" : { "Ref" : "BalancerSecurityGroup" }},
+          { "IpProtocol" : "tcp", "FromPort" : "8080",  "ToPort" : "8080",  "SourceSecurityGroupName" : { "Ref" : "BalancerSecurityGroup" }},
           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : { "Ref" : "SSHLocation" }},
-          { "IpProtocol" : "tcp", "FromPort" : "3389",  "ToPort" : "3389",  "CidrIp" : { "Ref" : "SSHLocation" }},
-          { "IpProtocol" : "tcp", "FromPort" : "8080",  "ToPort" : "8080",  "CidrIp" : { "Ref" : "SSHLocation" }}
+          { "IpProtocol" : "tcp", "FromPort" : "3389",  "ToPort" : "3389",  "CidrIp" : { "Ref" : "SSHLocation" }}
         ]
       }
     },
@@ -483,6 +484,11 @@
         "OptionSettings" : [
           {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "CrossZone", "Value": { "Ref": "ELBCrossZone" }},
           {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "SecurityGroups", "Value" : { "Fn::GetAtt" : ["BalancerSecurityGroup", "GroupId"] }},
+
+          {"Namespace" : "aws:elb:listener:8080", "OptionName": "ListenerProtocol", "Value": "TCP"},
+          {"Namespace" : "aws:elb:listener:8080", "OptionName": "InstancePort", "Value": "8080"},
+          {"Namespace" : "aws:elb:listener:8080", "OptionName": "InstanceProtocol", "Value": "TCP"},
+          {"Namespace" : "aws:elb:listener:8080", "OptionName": "ListenerEnabled", "Value": "true"},
 
           {"Namespace" : "aws:elasticbeanstalk:environment", "OptionName": "EnvironmentType", "Value": { "Ref": "EnvironmentType" }},
           {"Namespace" : "aws:elasticbeanstalk:environment", "OptionName": "ServiceRole", "Value": { "Ref": "ServiceRole" }},
