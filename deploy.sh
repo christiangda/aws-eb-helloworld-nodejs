@@ -6,17 +6,28 @@
 set -e
 
 # enable debug
-set -x
+#set -x
 
 ################################################################################
 # Parameters
 CF_TEMPLATE_FILE="./deployment/cf-beanstalk.json"
 CF_CONFIG_FILE="./deployment/helloworld-conf.json"
 REPO_NAME=`basename $(git remote show -n origin | grep Push | cut -d: -f2- | cut -d\. -f2)`
+PROGNAME=$(basename $0)
+
+################################################################################
+# Validate arguments
+if [ $# -lt 1 ]
+then
+  echo "Usage: ${PROGNAME} init|destroy"
+  exit 1
+fi
+
+ARG=$1
 
 ################################################################################
 # Functions
-file_exist() {
+function file_exist() {
   local name="$1"
   if [ -f $CF_TEMPLATE ] ; then
     echo true
@@ -25,12 +36,12 @@ file_exist() {
   fi
 }
 
-get_param() {
+function get_param() {
   local name="$1"
   cat $CF_CONFIG_FILE | jq -r --arg name $name '.[] | select(.ParameterKey == $name) | .ParameterValue'
 }
 
-bucket_exist() {
+function bucket_exist() {
     local bucket="$1"
     local region="$2"
     if aws s3 ls s3://$bucket --region $region 2>&1 | grep -q "NoSuchBucket"; then
@@ -40,7 +51,7 @@ bucket_exist() {
     fi
 }
 
-cf_stack_exist() {
+function cf_stack_exist() {
     local name="$1"
     local region="$2"
     if aws cloudformation describe-stacks \
@@ -52,7 +63,7 @@ cf_stack_exist() {
     fi
 }
 
-cf_create_stack() {
+function cf_create_stack() {
   local name="$1"
   local template="$2"
   local config_file="$3"
@@ -66,7 +77,7 @@ cf_create_stack() {
     --region $region
 }
 
-cf_delete_stack() {
+function cf_delete_stack() {
   local name="$1"
   local region="$2"
   aws cloudformation delete-stack \
@@ -74,7 +85,7 @@ cf_delete_stack() {
     --region $region
 }
 
-create_bucket() {
+function create_bucket() {
   local name="$1"
   local region="$2"
   aws s3api create-bucket \
@@ -83,7 +94,13 @@ create_bucket() {
     --create-bucket-configuration LocationConstraint=$region
 }
 
-wait_until_cf_stack_creation() {
+function delete_bucket() {
+  local name="$1"
+  local region="$2"
+  aws s3 rm s3://$name --recursive --region $region
+}
+
+function wait_until_cf_stack_creation() {
   local name="$1"
   local region="$2"
   echo "Waiting until Cloudformation stack \"${name}\" is created, takes a long time!"
@@ -93,19 +110,19 @@ wait_until_cf_stack_creation() {
   echo "Cloudformation stack \"${name}\" was created"
 }
 
-upload_artifact() {
+function upload_artifact() {
   local bucket="$1"
   local key="$2"
   local region="$3"
   git archive --format zip HEAD | aws s3 cp - s3://$bucket/$key --region $region
 }
 
-eb_init() {
+function eb_init() {
   local region="$1"
   eb init --platform node.js --region $region
 }
 
-eb_use() {
+function eb_use() {
   local env="$1"
   eb use $env
 }
@@ -130,19 +147,37 @@ if [[ "${CF_CONFIG_FILE_EXIST}" == false ]]; then
   echo "${CF_CONFIG_FILE} is necessary"
 fi
 
-# Create a BUCKET if not exist
-if [[ "${BUCKET_EXIST}" == false ]]; then
-  create_bucket $BUCKET $REGION
-fi
+#
+if [[ "${ARG}" == "init" ]]; then
 
-# upload our artifact to S3
-upload_artifact $BUCKET $KEY $REGION
+  # Create a BUCKET if not exist
+  if [[ "${BUCKET_EXIST}" == false ]]; then
+    create_bucket $BUCKET $REGION
+  fi
 
-if [[ "${CF_STACK_EXIST}" == false ]]; then
-  cf_create_stack $CF_STACK_NAME $CF_TEMPLATE_FILE $CF_CONFIG_FILE $REGION
-  wait_until_cf_stack_creation $CF_STACK_NAME $REGION
-  eb_init $REGION
-  eb_use $STACK_ENVIRONMENT
-  cp deployment/cloudwatch.config .ebextensions/
-  eb deploy
+  # upload our artifact to S3
+  upload_artifact $BUCKET $KEY $REGION
+
+  if [[ "${CF_STACK_EXIST}" == false ]]; then
+    cf_create_stack $CF_STACK_NAME $CF_TEMPLATE_FILE $CF_CONFIG_FILE $REGION
+    wait_until_cf_stack_creation $CF_STACK_NAME $REGION
+    eb_init $REGION
+    eb_use $STACK_ENVIRONMENT
+    cp deployment/cloudwatch.config .ebextensions/
+    #eb deploy
+  fi
+
+elif [[ "${ARG}" == "destroy" ]]; then
+
+  if [[ "${CF_STACK_EXIST}" == true ]]; then
+    cf_delete_stack $CF_STACK_NAME $REGION
+  fi
+
+  # Create a BUCKET if not exist
+  if [[ "${BUCKET_EXIST}" == true ]]; then
+    delete_bucket $BUCKET $REGION
+  fi
+
+else
+  echo "Invalid argument"
 fi

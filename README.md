@@ -45,65 +45,36 @@ chmod 400 ~/.ssh/hello-world-app-ec2-key-pair.pem
 
 ## Create initial stack
 
-The first time you need to create all your infrastructure as a code, and deploying the first version of our code
-```
-aws cloudformation create-stack \
-  --stack-name HelloWorld \
-  --template-body file://./deployment/cf-beanstalk.json \
-  --parameters file://./deployment/helloworld-conf.json \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --on-failure DELETE \
-  --region eu-west-1
-```
-
-## Managing deployments
-
-### Prepare Elastic Beanstalk environments
+This project provide a [deploy.sh](deploy) script to help us deploy our project and environment.
 
 ```
-eb init --platform node.js --region eu-west-1
-
-eb use production
+./deploy.sh init
 ```
 
-### Enable memory metrics
-´´´
-cat < __EOF__ >> .ebextensions/cloudwatch.config
-packages:
-  yum:
-    perl-DateTime: []
-    perl-Sys-Syslog: []
-    perl-LWP-Protocol-https: []
-    perl-Switch: []
-    perl-URI: []
-    perl-Bundle-LWP: []
+## Destroy stack
 
-sources:
-  /opt/cloudwatch: http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip
+This project provide a [deploy.sh](deploy) script to help us destroy our project and environment.
 
-container_commands:
-  01-setupcron:
-    command: |
-      echo '*/5 * * * * root perl /opt/cloudwatch/aws-scripts-mon/mon-put-instance-data.pl `{"Fn::GetOptionSetting" : { "OptionName" : "CloudWatchMetrics", "DefaultValue" : "--mem-util --disk-space-util --disk-path=/" }}` >> /var/log/cwpump.log 2>&1' > /etc/cron.d/cwpump
-  02-changeperm:
-    command: chmod 644 /etc/cron.d/cwpump
-  03-changeperm:
-    command: chmod u+x /opt/cloudwatch/aws-scripts-mon/mon-put-instance-data.pl
+```
+./deploy.sh destroy
+```
 
-option_settings:
-  "aws:autoscaling:launchconfiguration" :
-    IamInstanceProfile : "aws-elasticbeanstalk-ec2-role"
-  "aws:elasticbeanstalk:customoption" :
-    CloudWatchMetrics : "--mem-util --mem-used --mem-avail --disk-space-util --disk-space-used --disk-space-avail --disk-path=/ --auto-scaling"
+## Deploying changes
 
-__EOF__
-´´´
+you can use `eb cli` to control all your project, for example if you want to know
+the environments in your project, just execute:
 
+```
+eb list
+```
 
-## Stuff created by this project
+if you want open your application environment using your default web browser use:
 
-* [AWS R53 Public Hosted Zones](http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/AboutHZWorkingWith.html)
-* [AWS Elastic Load Balancer](https://aws.amazon.com/elasticloadbalancing/)
+```
+eb open
+```
+
+if you want to knoe more about [eb cli, click here](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-cmd-commands.html)
 
 ## References
 
