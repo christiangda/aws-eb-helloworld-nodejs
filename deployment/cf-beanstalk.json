@@ -174,10 +174,22 @@
       "ConstraintDescription": "must be a valid domain name."
     },
 
-    "ApplicationS3Path": {
-      "Description": "Application artifact path in s3",
+    "ApplicationS3Bucket": {
+      "Description": "Application path in s3",
       "Type": "String",
-      "Default": "s3://hello-world-app-beanstalk/helloworld.zip"
+      "Default": "https://s3-eu-west-1.amazonaws.com/hello-world-app-beanstalk"
+    },
+
+    "ApplicationS3Artifact": {
+      "Description": "Application artifact file",
+      "Type": "String",
+      "Default": "helloworld.zip"
+    },
+
+    "AWSRegion": {
+      "Description": "AWS Region name",
+      "Type": "String",
+      "Default": "eu-west-1"
     }
   },
 
@@ -474,7 +486,8 @@
         "Description" : "1.0.0",
         "ApplicationName" : { "Ref" : "SampleApplication" },
         "SourceBundle" : {
-          "S3Bucket" : { "Ref": "ApplicationS3Path" }}
+          "S3Bucket" : { "Ref": "ApplicationS3Bucket" },
+          "S3Key" : { "Ref": "ApplicationS3Artifact" }
         }
       }
     },
@@ -485,7 +498,7 @@
         "ApplicationName" : { "Ref" : "SampleApplication" },
         "Description" :  "AWS Elastic Beanstalk Environment running Node.js Hello World Application",
         "EnvironmentId" : "",
-        "SolutionStackName" : "64bit Amazon Linux 2017.03 v4.1.1 running Node.js",
+        "SolutionStackName" : "64bit Amazon Linux 2017.03 v4.2.0 running Node.js",
         "OptionSettings" : [
           {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "CrossZone", "Value": { "Ref": "ELBCrossZone" }},
           {"Namespace" : "aws:elb:loadbalancer", "OptionName" : "SecurityGroups", "Value" : { "Fn::GetAtt" : ["BalancerSecurityGroup", "GroupId"] }},

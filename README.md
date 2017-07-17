@@ -52,7 +52,7 @@ aws cloudformation create-stack \
   --template-body file://./deployment/cf-beanstalk.json \
   --parameters file://./deployment/helloworld-conf.json \
   --capabilities CAPABILITY_NAMED_IAM \
-  --disable-rollback \
+  --on-failure DELETE \
   --region eu-west-1
 ```
 
@@ -65,6 +65,40 @@ eb init --platform node.js --region eu-west-1
 
 eb use production
 ```
+
+### Enable memory metrics
+´´´
+cat < __EOF__ >> .ebextensions/cloudwatch.config
+packages:
+  yum:
+    perl-DateTime: []
+    perl-Sys-Syslog: []
+    perl-LWP-Protocol-https: []
+    perl-Switch: []
+    perl-URI: []
+    perl-Bundle-LWP: []
+
+sources:
+  /opt/cloudwatch: http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip
+
+container_commands:
+  01-setupcron:
+    command: |
+      echo '*/5 * * * * root perl /opt/cloudwatch/aws-scripts-mon/mon-put-instance-data.pl `{"Fn::GetOptionSetting" : { "OptionName" : "CloudWatchMetrics", "DefaultValue" : "--mem-util --disk-space-util --disk-path=/" }}` >> /var/log/cwpump.log 2>&1' > /etc/cron.d/cwpump
+  02-changeperm:
+    command: chmod 644 /etc/cron.d/cwpump
+  03-changeperm:
+    command: chmod u+x /opt/cloudwatch/aws-scripts-mon/mon-put-instance-data.pl
+
+option_settings:
+  "aws:autoscaling:launchconfiguration" :
+    IamInstanceProfile : "aws-elasticbeanstalk-ec2-role"
+  "aws:elasticbeanstalk:customoption" :
+    CloudWatchMetrics : "--mem-util --mem-used --mem-avail --disk-space-util --disk-space-used --disk-space-avail --disk-path=/ --auto-scaling"
+
+__EOF__
+´´´
+
 
 ## Stuff created by this project
 

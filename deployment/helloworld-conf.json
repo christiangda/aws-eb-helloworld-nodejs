@@ -72,7 +72,15 @@
     "ParameterValue": "mydomain.com"
   },
   {
-    "ParameterKey": "ApplicationS3Path",
-    "ParameterValue": "s3://hello-world-app-beanstalk/helloworld.zip"
+    "ParameterKey": "ApplicationS3Bucket",
+    "ParameterValue": "hello-world-app-beanstalk"
+  },
+  {
+    "ParameterKey": "ApplicationS3Artifact",
+    "ParameterValue": "helloworld.zip"
+  },
+  {
+    "ParameterKey": "AWSRegion",
+    "ParameterValue": "eu-west-1"
   }
 ]
