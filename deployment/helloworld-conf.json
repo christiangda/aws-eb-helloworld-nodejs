@@ -4,16 +4,8 @@
     "ParameterValue": "HelloWorld"
   },
   {
-    "ParameterKey": "RootDomainName",
-    "ParameterValue": "mydomain.com"
-  },
-  {
     "ParameterKey": "EnvironmentName",
     "ParameterValue": "production"
-  },
-  {
-    "ParameterKey": "BastionKeyName",
-    "ParameterValue": "hello-world-app-bastion-key-pair"
   },
   {
     "ParameterKey": "KeyName",
@@ -22,14 +14,6 @@
   {
     "ParameterKey": "SSHLocation",
     "ParameterValue": "0.0.0.0/0"
-  },
-  {
-    "ParameterKey": "BastionInstanceType",
-    "ParameterValue": "t2.small"
-  },
-  {
-    "ParameterKey": "NATInstanceType",
-    "ParameterValue": "t2.small"
   },
   {
     "ParameterKey": "AutoScalingGroupMinSize",
@@ -80,7 +64,15 @@
     "ParameterValue": "LoadBalanced"
   },
   {
-    "ParameterKey": "OperatorEMail",
+    "ParameterKey": "OperatorEmail",
     "ParameterValue": "youremail@gmail.com"
+  },
+  {
+    "ParameterKey": "RootDomainName",
+    "ParameterValue": "mydomain.com"
+  },
+  {
+    "ParameterKey": "ApplicationS3Path",
+    "ParameterValue": "s3://hello-world-app-beanstalk/helloworld.zip"
   }
 ]

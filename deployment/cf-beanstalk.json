@@ -172,6 +172,12 @@
       "Default": "mydomain.com",
       "AllowedPattern": "(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]",
       "ConstraintDescription": "must be a valid domain name."
+    },
+
+    "ApplicationS3Path": {
+      "Description": "Application artifact path in s3",
+      "Type": "String",
+      "Default": "s3://hello-world-app-beanstalk/helloworld.zip"
     }
   },
 
@@ -346,15 +352,6 @@
 
   "Resources" : {
 
-    "AppArtifactBucketPolicy": {
-      "Type": "AWS::S3::BucketPolicy",
-      "Properties": {
-        "Bucket": {
-          "Ref": "AppArtifactBucket"
-        }
-      }
-    },
-
     "HostedZone": {
       "Type": "AWS::Route53::HostedZone",
       "Properties": {
@@ -477,8 +474,7 @@
         "Description" : "1.0.0",
         "ApplicationName" : { "Ref" : "SampleApplication" },
         "SourceBundle" : {
-          "S3Bucket" : { "Fn::Join" : ["-", ["elasticbeanstalk-samples", { "Ref" : "AWS::Region" }]]},
-          "S3Key" : "nodejs-sample-v2.zip"
+          "S3Bucket" : { "Ref": "ApplicationS3Path" }}
         }
       }
     },
