@@ -17,7 +17,7 @@ Installing the [AWS Command Line Interface](https://aws.amazon.com/cli)
 pip install --upgrade --user awscli
 ```
 
-Configure awscli
+Configure awscli (iterative mode)
 ```
 cd ~
 aws configure
@@ -45,15 +45,18 @@ chmod 400 ~/.ssh/hello-world-app-ec2-key-pair.pem
 
 ## Create initial stack
 
-This project provide a [deploy.sh](deploy) script to help us deploy our project and environment.
+This project provide a [deploy.sh](deploy.sh) script to help us deploy our project and environment.
 
 ```
 ./deploy.sh init
 ```
 
+It use AWS CloudFormation template locate in [deployment/cf-beanstalk.json](deployment/cf-beanstalk.json)
+and a config file [deployment/helloworld-conf.json](deployment/helloworld-conf.json) where you can put your own config Parameters
+
 ## Destroy stack
 
-This project provide a [deploy.sh](deploy) script to help us destroy our project and environment.
+This project provide a [deploy.sh](deploy.sh) script to help us destroy our project and environment.
 
 ```
 ./deploy.sh destroy
@@ -61,8 +64,15 @@ This project provide a [deploy.sh](deploy) script to help us destroy our project
 
 ## Deploying changes
 
-you can use `eb cli` to control all your project, for example if you want to know
-the environments in your project, just execute:
+you can use [eb cli](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-cmd-commands.html) to control  your project.
+
+if you want to changes your project, execute:
+
+```
+eb deploy <your environment name>
+```
+
+if you want to know the environments in your project, just execute:
 
 ```
 eb list
